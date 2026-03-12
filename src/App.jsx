@@ -1,7 +1,11 @@
 import { useState } from 'react'
+import { createClient } from '@supabase/supabase-js'
 import './index.css'
 
-const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbyY28zEU52SZrVHTmLOEU0izM6KFwoPSgFJtbTldU8eAePvR2GVxmHhKsxz51tPOgGy/exec'
+const supabase = createClient(
+  import.meta.env.VITE_SUPABASE_URL,
+  import.meta.env.VITE_SUPABASE_ANON_KEY
+)
 
 const EVENT_DATE = 'Thursday, March 12, 2026'
 const EVENT_LOCATION = 'Miami, FL'
@@ -47,16 +51,17 @@ function App() {
       localStorage.setItem('openclaw_applications', JSON.stringify(existing))
     } catch (_) {}
 
-    // POST to Google Sheets webhook
+    // Save to Supabase
     try {
-      const res = await fetch(WEBHOOK_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
+      const { error: dbError } = await supabase.from('meetup_applications').insert({
+        name: payload.name,
+        email: payload.email,
+        phone: payload.phone,
+        ai_level: Number(payload.aiLevel),
+        goal: payload.goal,
+        building: payload.building,
       })
-      if (!res.ok) {
-        throw new Error('Submission failed. Please try again.')
-      }
+      if (dbError) throw new Error(dbError.message || 'Submission failed. Please try again.')
       setSubmitted(true)
     } catch (err) {
       setError(err.message || 'Something went wrong. Please try again.')
