@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import './index.css'
 
-const WEBHOOK_URL = import.meta.env.VITE_WEBHOOK_URL || '/api/apply'
+const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbyY28zEU52SZrVHTmLOEU0izM6KFwoPSgFJtbTldU8eAePvR2GVxmHhKsxz51tPOgGy/exec'
 
 const EVENT_DATE = 'Thursday, March 12, 2026'
 const EVENT_LOCATION = 'Miami, FL'
@@ -30,37 +30,38 @@ function App() {
     setError('')
 
     const payload = {
-      ...formData,
+      name: formData.fullName,
+      email: formData.email,
+      phone: formData.phone,
+      aiLevel: formData.aiExperience,
+      goal: formData.topGoal,
+      building: formData.currentlyBuilding,
       submittedAt: new Date().toISOString(),
       event: `OpenClaw Meetup - Miami — ${EVENT_DATE}`,
     }
 
-    // Always save locally first
+    // Save locally as backup
     try {
       const existing = JSON.parse(localStorage.getItem('openclaw_applications') || '[]')
       existing.push(payload)
       localStorage.setItem('openclaw_applications', JSON.stringify(existing))
     } catch (_) {}
 
-    // Try webhook
+    // POST to Google Sheets webhook
     try {
       const res = await fetch(WEBHOOK_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       })
-      if (!res.ok && res.status !== 404 && res.status !== 405) {
+      if (!res.ok) {
         throw new Error('Submission failed. Please try again.')
       }
       setSubmitted(true)
     } catch (err) {
-      if (err.message === 'Submission failed. Please try again.') {
-        setError(err.message)
-        setLoading(false)
-        return
-      }
-      // Network / endpoint not configured — still show success (saved locally)
-      setSubmitted(true)
+      setError(err.message || 'Something went wrong. Please try again.')
+      setLoading(false)
+      return
     } finally {
       setLoading(false)
     }
