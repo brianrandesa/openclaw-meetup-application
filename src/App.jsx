@@ -11,12 +11,9 @@ function App() {
     fullName: '',
     email: '',
     phone: '',
-    company: '',
-    industryRole: '',
-    whyAttend: '',
-    hopingToLearn: '',
-    howHeard: '',
-    socialLinks: '',
+    aiExperience: 5,
+    topGoal: '',
+    currentlyBuilding: '',
   })
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -194,53 +191,71 @@ function App() {
                 <Input name="fullName" value={formData.fullName} onChange={handleChange}
                   placeholder="Alex Johnson" type="text" required />
               </Field>
-              <Field label="Email Address" required>
+              <Field label="Email" required>
                 <Input name="email" value={formData.email} onChange={handleChange}
                   placeholder="alex@company.com" type="email" required />
               </Field>
             </div>
 
-            {/* Row 2 */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
-              <Field label="Phone Number" required>
-                <Input name="phone" value={formData.phone} onChange={handleChange}
-                  placeholder="+1 (305) 000-0000" type="tel" required />
-              </Field>
-              <Field label="Company / Business" required>
-                <Input name="company" value={formData.company} onChange={handleChange}
-                  placeholder="Acme Corp" type="text" required />
-              </Field>
-            </div>
-
-            {/* Industry */}
-            <Field label="Industry / Role" required>
-              <Input name="industryRole" value={formData.industryRole} onChange={handleChange}
-                placeholder="e.g. Founder — SaaS / VP Engineering — Fintech" type="text" required />
+            {/* Phone */}
+            <Field label="Phone Number" required>
+              <Input name="phone" value={formData.phone} onChange={handleChange}
+                placeholder="+1 (305) 000-0000" type="tel" required />
             </Field>
 
-            {/* Why attend */}
-            <Field label="Why do you want to attend?" required>
-              <TextArea name="whyAttend" value={formData.whyAttend} onChange={handleChange}
-                placeholder="Tell us what draws you to this event and what you bring to the room..." rows={3} required />
+            {/* AI Experience Slider */}
+            <Field label="Rate your AI experience (1 = beginner, 10 = expert)" required>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ color: '#64748b', fontSize: '12px' }}>Beginner</span>
+                  <span style={{
+                    background: 'linear-gradient(135deg, #1d4ed8, #3b82f6)',
+                    color: 'white', fontWeight: '800', fontSize: '18px',
+                    width: '44px', height: '44px', borderRadius: '50%',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    boxShadow: '0 0 16px rgba(59,130,246,0.4)',
+                  }}>
+                    {formData.aiExperience}
+                  </span>
+                  <span style={{ color: '#64748b', fontSize: '12px' }}>Expert</span>
+                </div>
+                <input
+                  type="range"
+                  name="aiExperience"
+                  min="1"
+                  max="10"
+                  step="1"
+                  value={formData.aiExperience}
+                  onChange={handleChange}
+                  required
+                  style={{
+                    width: '100%', accentColor: '#3b82f6', cursor: 'pointer',
+                    height: '6px', borderRadius: '4px',
+                  }}
+                />
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  {[1,2,3,4,5,6,7,8,9,10].map(n => (
+                    <span key={n} style={{
+                      fontSize: '10px', color: n === Number(formData.aiExperience) ? '#60a5fa' : '#334155',
+                      fontWeight: n === Number(formData.aiExperience) ? '700' : '400',
+                      transition: 'color 0.2s',
+                    }}>{n}</span>
+                  ))}
+                </div>
+              </div>
             </Field>
 
-            {/* Hoping to learn */}
-            <Field label="What are you hoping to learn or see?" required>
-              <TextArea name="hopingToLearn" value={formData.hopingToLearn} onChange={handleChange}
-                placeholder="Specific AI use cases, demos, connections you're looking for..." rows={3} required />
+            {/* Top goal */}
+            <Field label="What is the #1 thing you want to get out of this event?" required>
+              <TextArea name="topGoal" value={formData.topGoal} onChange={handleChange}
+                placeholder="Be specific — what would make this event a win for you?" rows={3} required />
             </Field>
 
-            {/* Row 3 */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
-              <Field label="How did you hear about this event?" optional>
-                <Input name="howHeard" value={formData.howHeard} onChange={handleChange}
-                  placeholder="Twitter, friend, newsletter..." type="text" />
-              </Field>
-              <Field label="LinkedIn / Twitter" optional>
-                <Input name="socialLinks" value={formData.socialLinks} onChange={handleChange}
-                  placeholder="linkedin.com/in/yourname" type="text" />
-              </Field>
-            </div>
+            {/* Currently building */}
+            <Field label="What are you currently building with AI?" required>
+              <TextArea name="currentlyBuilding" value={formData.currentlyBuilding} onChange={handleChange}
+                placeholder="Tell us about your project, product, or experiments with AI..." rows={3} required />
+            </Field>
 
             {/* Error */}
             {error && (
